@@ -38,7 +38,7 @@ train['Sex_int'] = train['Sex'].astype('category').cat.codes
 x_test = test[['Age','Sex_int','SibSp','Pclass','Parch','Embarked_int','Fare']].values
 x_train = train[['Age','Sex_int','SibSp','Pclass','Parch','Embarked_int','Fare']].values
 y_train = train['Survived'].values
-y_test = pd.read_csv('gender_submission.csv', usecols=['Survived']).values
+
 #%%
 # Feature Scaling
 from sklearn.preprocessing import StandardScaler
@@ -55,12 +55,17 @@ classifier.fit(x_train, y_train)
 #%%
 # Applying Grid Search to find the best model and the best parameters
 from sklearn.model_selection import GridSearchCV
-C = [0.00005,0.05, 1, 10, 100, 1000,50000]
-penalty = ['l2']
+#C = [0.047,0.048,0.049,0.05,0.051]
+C = np.arange(0.048,0.05,0.000001)
+penalty1 = ['l1']
+penalty2 = ['l2']
 multi_class = ['ovr']
-solver = ['lbfgs', 'liblinear', 'sag']
-
-parameters = [{'C': C, 'penalty':penalty, 'solver':solver, 'multi_class':multi_class}]
+solver1 = ['liblinear']
+solver2 = ['lbfgs','sag','newton-cg']
+#tol = [0.0000000001,0.00005,0.0001,0.5,1,10,100]
+max_iter = [250,500,1000]
+parameters = [{'C': C, 'penalty':penalty1, 'solver':solver1, 'multi_class':multi_class, 'max_iter':max_iter},
+              {'C':C, 'penalty':penalty2,'solver':solver2, 'multi_class':multi_class, 'max_iter':max_iter}]
 grid_search = GridSearchCV(estimator = classifier,
                            param_grid = parameters,
                            scoring = 'accuracy',
@@ -71,9 +76,21 @@ best_accuracy = grid_search.best_score_
 best_parameters = grid_search.best_params_
 
 #%%
+# Fitting Logistic Regression to the Training set
+from sklearn.linear_model import LogisticRegression
+classifier = LogisticRegression(**grid_search.best_params_, random_state = 0)
+classifier.fit(x_train, y_train)
+
+#%%
 # Predicting the Test set results
 y_pred = classifier.predict(x_test)
 #%%
+
+predicion = pd.DataFrame({'PassengerId':test['PassengerId'], 'prediction':y_pred})
+predicion.to_csv('submission.csv')
+#%%
+
+'''
 # Making the Confusion Matrix
 from sklearn.metrics import confusion_matrix, accuracy_score, r2_score, classification_report
 cm = confusion_matrix(y_test, y_pred)
@@ -81,7 +98,7 @@ accuracy = accuracy_score(y_test, y_pred, normalize=True, sample_weight=None)
 r2 = r2_score(y_test, y_pred)
 classification_report = classification_report(y_test,y_pred,digits=3)
 print('accuracy: '+str(accuracy)+'\nr2: '+str(r2)+'\nclassification_report:\n\n'+classification_report)
-#%%
+
 import matplotlib.pyplot as plt
 def plot_confusion_matrix(cm, title='Confusion matrix', cmap=plt.cm.Oranges):
     import itertools
@@ -107,5 +124,6 @@ fig, ax = plt.subplots()
 plot_confusion_matrix(cm)
 
 plt.show()
+'''
 #%%
 
