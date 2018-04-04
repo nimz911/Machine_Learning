@@ -39,21 +39,21 @@ classifier.fit(x_train, y_train)
 # Applying Grid Search to find the best model and the best parameters
 from sklearn.model_selection import GridSearchCV
 #C = [0.047,0.048,0.049,0.05,0.051]
-C = np.arange(0.046,0.05,0.00001)
+C = np.arange(0.045,0.06,0.00001)
 penalty1 = ['l1']
 penalty2 = ['l2']
 multi_class = ['ovr']
 solver1 = ['liblinear']
 solver2 = ['lbfgs','sag','newton-cg']
-tol = [0.00001,0.00005,0.001]
-max_iter = [250,500,1000]
-parameters = [{'C': C, 'penalty':penalty1, 'solver':solver1, 'multi_class':multi_class, 'max_iter':max_iter, 'tol':tol},
-              {'C':C, 'penalty':penalty2,'solver':solver2, 'multi_class':multi_class, 'max_iter':max_iter, 'tol':tol}]
+#tol = [0.00001,0.00005,0.001]
+max_iter = [150,250,500]
+parameters = [{'C': C, 'penalty':penalty1, 'solver':solver1, 'multi_class':multi_class, 'max_iter':max_iter},
+              {'C':C, 'penalty':penalty2,'solver':solver2, 'multi_class':multi_class, 'max_iter':max_iter}]
 grid_search = GridSearchCV(estimator = classifier,
                            param_grid = parameters,
                            scoring = 'accuracy',
-                           cv = 10,
-                           n_jobs = 3)
+                           cv = 20,
+                           n_jobs = 4)
 grid_search = grid_search.fit(x_train, y_train)
 best_accuracy = grid_search.best_score_
 best_parameters = grid_search.best_params_
