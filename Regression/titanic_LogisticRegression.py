@@ -15,7 +15,19 @@ df = df[pd.notnull(df['Embarked'])] # Remove 2 'Embarked' NAN rows
 #%%
 df['Embarked_int'] = df['Embarked'].astype('category').cat.codes
 df['Sex_int'] = df['Sex'].astype('category').cat.codes
-X = df[['Age','Sex_int','SibSp','Pclass','Parch','Embarked_int','Fare']].values
+df['Mr'] = df['Name'].str.contains(' Mr. ').astype('category').cat.codes
+df['Mrs'] = df['Name'].str.contains(' Mrs. ').astype('category').cat.codes
+df['Miss'] = df['Name'].str.contains(' Miss. ').astype('category').cat.codes
+df['Ms'] = df['Name'].str.contains(' Ms. ').astype('category').cat.codes
+df['Mr'] = df['Mr'] * df.columns.get_loc("Mr")
+df['Mrs'] = df['Mrs'] * df.columns.get_loc("Mrs")
+df['Miss'] = df['Miss'] * df.columns.get_loc("Miss")
+df['Ms'] = df['Ms'] * df.columns.get_loc("Ms")
+df['title'] = df['Mr'] + df['Mrs'] + df['Ms'] + df['Miss']
+df['title'] = df['title'].astype('category').cat.codes
+
+
+X = df[['Age','Sex_int','SibSp','Pclass','Parch','Embarked_int','Fare','title']].values
 y = df['Survived'].values
 #%%
 
@@ -84,6 +96,28 @@ test['Embarked_int'] = test['Embarked'].astype('category').cat.codes
 train['Embarked_int'] = train['Embarked'].astype('category').cat.codes
 test['Sex_int'] = test['Sex'].astype('category').cat.codes
 train['Sex_int'] = train['Sex'].astype('category').cat.codes
+
+test['Mr'] = test['Name'].str.contains(' Mr. ').astype('category').cat.codes
+test['Mrs'] = test['Name'].str.contains(' Mrs. ').astype('category').cat.codes
+test['Miss'] = test['Name'].str.contains(' Miss. ').astype('category').cat.codes
+test['Ms'] = test['Name'].str.contains(' Ms. ').astype('category').cat.codes
+test['Mr'] = test['Mr'] * df.columns.get_loc("Mr")
+test['Mrs'] = test['Mrs'] * df.columns.get_loc("Mrs")
+test['Miss'] = test['Miss'] * df.columns.get_loc("Miss")
+test['Ms'] = test['Ms'] * df.columns.get_loc("Ms")
+test['title'] = test['Mr'] + test['Mrs'] + test['Ms'] + test['Miss']
+test['title'] = test['title'].astype('category').cat.codes
+
+train['Mr'] = train['Name'].str.contains(' Mr. ').astype('category').cat.codes
+train['Mrs'] = train['Name'].str.contains(' Mrs. ').astype('category').cat.codes
+train['Miss'] = train['Name'].str.contains(' Miss. ').astype('category').cat.codes
+train['Ms'] = train['Name'].str.contains(' Ms. ').astype('category').cat.codes
+train['Mr'] = train['Mr'] * df.columns.get_loc("Mr")
+train['Mrs'] = train['Mrs'] * df.columns.get_loc("Mrs")
+train['Miss'] = train['Miss'] * df.columns.get_loc("Miss")
+train['Ms'] = train['Ms'] * df.columns.get_loc("Ms")
+train['title'] = train['Mr'] + train['Mrs'] + train['Ms'] + train['Miss']
+train['title'] = train['title'].astype('category').cat.codes
 #%%
 x_test = test[['Age','Sex_int','SibSp','Pclass','Parch','Embarked_int','Fare']].values
 x_train = train[['Age','Sex_int','SibSp','Pclass','Parch','Embarked_int','Fare']].values
