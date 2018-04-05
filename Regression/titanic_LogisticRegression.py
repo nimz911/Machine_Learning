@@ -119,8 +119,8 @@ train['Ms'] = train['Ms'] * df.columns.get_loc("Ms")
 train['title'] = train['Mr'] + train['Mrs'] + train['Ms'] + train['Miss']
 train['title'] = train['title'].astype('category').cat.codes
 #%%
-x_test = test[['Age','Sex_int','SibSp','Pclass','Parch','Embarked_int','Fare']].values
-x_train = train[['Age','Sex_int','SibSp','Pclass','Parch','Embarked_int','Fare']].values
+x_test = test[['Age','Sex_int','SibSp','Pclass','Parch','Embarked_int','Fare','title']].values
+x_train = train[['Age','Sex_int','SibSp','Pclass','Parch','Embarked_int','Fare','title']].values
 y_train = train['Survived'].values
 
 #%%
