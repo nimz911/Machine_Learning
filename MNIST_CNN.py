@@ -46,13 +46,11 @@ X_train,X_val,y_train,y_val = train_test_split(X_train, y_train_binary, test_siz
 
 #%%
 
-epochs = 20
-batch_size = 64
-lrate = 0.0003
 
 
 #%%
 from keras.layers.advanced_activations import LeakyReLU
+'''
 classifier = Sequential()
 classifier.add(Conv2D(32, kernel_size=(3, 3),activation='linear',input_shape=(28,28,1),padding='same'))
 classifier.add(LeakyReLU(alpha=0.1))
@@ -67,14 +65,42 @@ classifier.add(Flatten())
 classifier.add(Dense(128, activation='linear'))
 classifier.add(LeakyReLU(alpha=0.1))                  
 classifier.add(Dense(10, activation='softmax'))
+'''
+epochs = 20
+batch_size = 64
+lrate = 0.0003
+
+classifier = Sequential()
+classifier.add(Conv2D(64, kernel_size=(3, 3),activation='linear',padding='same',input_shape=(28,28,1)))
+classifier.add(LeakyReLU(alpha=0.1))
+classifier.add(MaxPooling2D((2, 2),padding='same'))
+classifier.add(Dropout(0.3))
+
+classifier.add(Conv2D(128, (3, 3), activation='linear',padding='same'))
+classifier.add(LeakyReLU(alpha=0.1))
+classifier.add(MaxPooling2D(pool_size=(2, 2),padding='same'))
+classifier.add(Dropout(0.3))
+
+classifier.add(Conv2D(256, (3, 3), activation='linear',padding='same'))
+classifier.add(LeakyReLU(alpha=0.1))                  
+classifier.add(MaxPooling2D(pool_size=(2, 2),padding='same'))
+classifier.add(Dropout(0.45))
+classifier.add(Flatten())
+
+classifier.add(Dense(256, activation='linear'))
+classifier.add(LeakyReLU(alpha=0.1))           
+classifier.add(Dropout(0.35))
+
+classifier.add(Dense(10, activation='softmax'))
+
+decay = lrate/epochs
+adam = keras.optimizers.Adam()
 
 #%%
-classifier.compile(loss=keras.losses.categorical_crossentropy, 
-                   optimizer=keras.optimizers.Adam(),metrics=['accuracy'])
+classifier.compile(loss=keras.losses.categorical_crossentropy,optimizer=adam,metrics=['accuracy'])
 
 #%%
-model_train = classifier.fit(X_train, y_train, batch_size=batch_size,epochs=epochs,
-                                  verbose=1,validation_data=(X_val, y_val))
+model_train = classifier.fit(X_train, y_train, batch_size=batch_size,epochs=epochs,verbose=1,validation_data=(X_val, y_val))
 #%%
 test_eval = classifier.evaluate(X_val, y_val, verbose=0)
 #%%
